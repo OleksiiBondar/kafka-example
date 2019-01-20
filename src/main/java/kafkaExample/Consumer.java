@@ -15,15 +15,17 @@ public class Consumer {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "test-consumer-group");
+        props.put(ConsumerConfig.METRIC_REPORTER_CLASSES_CONFIG, "io.micrometer.core.instrument.binder.kafka.MicrometerKafkaMetrics");
         KafkaConsumer consumer = new KafkaConsumer(props);
         consumer.subscribe(Arrays.asList("odd", "even"));
         int counter = 0;
-        while (counter <= 1000) {
+        while (counter <= 10) {
             ConsumerRecords<String, String> recs = consumer.poll(10);
             if (recs.count() == 0) {
             } else {
                 for (ConsumerRecord<String, String> rec : recs) {
                     System.out.printf("Recieved %s: %s", rec.key(), rec.value());
+                    System.out.println();
                 }
             }
             counter++;
