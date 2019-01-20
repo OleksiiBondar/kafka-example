@@ -13,7 +13,7 @@ public class Producer {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10; i++) {
             ProducerRecord<String, String> data;
             if (i % 2 == 0) {
                 data = new ProducerRecord<String, String>("even", 0, Integer.toString(i), String.format("%d is even", i));
