@@ -1,5 +1,9 @@
 package kafkaExample;
 
+import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.datadog.DatadogMeterRegistry;
+
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -14,6 +18,10 @@ public class Producer {
     private final static Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     
     public static void main(String[] args) throws InterruptedException {
+        
+        DatadogMeterRegistry registry = new DatadogMeterRegistry(new CustomDatadogConfig(), Clock.SYSTEM);
+        Metrics.addRegistry(registry);
+        
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
@@ -31,6 +39,7 @@ public class Producer {
             logger.info("Sent record to topic");
             Thread.sleep(1L);
         }
+        Thread.sleep(10_000);
         producer.close();
     }
 }

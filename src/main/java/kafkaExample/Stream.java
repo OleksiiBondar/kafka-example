@@ -1,5 +1,9 @@
 package kafkaExample;
 
+import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.datadog.DatadogMeterRegistry;
+
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KeyValue;
@@ -15,6 +19,10 @@ import java.util.Properties;
 public class Stream {
 
     public static void main(String[] args) {
+        
+        DatadogMeterRegistry registry = new DatadogMeterRegistry(new CustomDatadogConfig(), Clock.SYSTEM);
+        Metrics.addRegistry(registry);
+        
         Properties config = new Properties();
         config.put(StreamsConfig.APPLICATION_ID_CONFIG, "kafka-example");
         config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
