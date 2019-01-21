@@ -26,19 +26,17 @@ public class Consumer {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "test-consumer-group");
         props.put(ConsumerConfig.METRIC_REPORTER_CLASSES_CONFIG,
                 "io.micrometer.core.instrument.binder.kafka.KafkaConsumerApiMetrics");
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-        consumer.subscribe(Arrays.asList("odd", "even"));
-        int counter = 0;
-        while (counter <= 10) {
-            ConsumerRecords<String, String> recs = consumer.poll(Duration.ofMillis(100));
-            if (recs.count() == 0) {
-            } else {
-                for (ConsumerRecord<String, String> rec : recs) {
-                    logger.info("Recieved {} : {}", rec.key(), rec.value());
+        try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
+            consumer.subscribe(Arrays.asList("odd", "even"));
+            while (true) {
+                ConsumerRecords<String, String> recs = consumer.poll(Duration.ofMillis(5000));
+                if (recs.count() > 0) {
+                    for (ConsumerRecord<String, String> rec : recs) {
+                        logger.error("Recieved {} : {}", rec.key(), rec.value());
+                    }
+                    consumer.commitSync();
                 }
             }
-            counter++;
         }
-        consumer.close();
     }
 }
